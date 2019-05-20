@@ -529,7 +529,7 @@ Remove :color key. And sort the plist alphabetically."
      (nth 2 (assoc hydra-hint-display-type hydra-hint-display-alist))))
   nil)
 
-(defvar hydra-head-format "[%s]: "
+(defvar hydra-head-format "%s "
   "The formatter for each head of a plain docstring.")
 
 (defvar hydra-key-doc-function 'hydra-key-doc-function-default
@@ -539,8 +539,8 @@ Remove :color key. And sort the plist alphabetically."
   (cond
     ((equal key " ") (format (format "%%-%ds" (+ 3 key-width doc-width)) doc))
     ((listp doc)
-     `(format ,(format "%%%ds: %%%ds" key-width (- -1 doc-width)) ,key ,doc))
-    (t (format (format "%%%ds: %%%ds" key-width (- -1 doc-width)) key doc))))
+     `(format ,(format "%%%ds  %%%ds" key-width (- -1 doc-width)) ,key ,doc))
+    (t (format (format "%%%ds  %%%ds" key-width (- -1 doc-width)) key doc))))
 
 (defun hydra--to-string (x)
   (if (stringp x)
@@ -660,7 +660,7 @@ HEAD's binding is returned as a string with a colored face."
 HEAD's binding is returned as a string wrapped with [] or {}."
   (format
    (if (hydra--head-property head :exit)
-       "[%s]"
+       "%s"
      "{%s}") (car head)))
 
 (defun hydra-fontify-head (head body)
