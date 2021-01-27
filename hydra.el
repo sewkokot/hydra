@@ -320,6 +320,15 @@ Exitable only through a blue head.")
       (1 font-lock-keyword-face)
       (2 font-lock-type-face)))))
 
+;;* Imenu
+(defun hydra-add-imenu ()
+  "Add this to `emacs-lisp-mode-hook' to have hydras in `imenu'."
+  (add-to-list
+   'imenu-generic-expression
+   '("Hydras"
+     "^.*(\\(defhydra\\) \\([a-zA-Z-]+\\)"
+     2)))
+
 ;;* Find Function
 (eval-after-load 'find-func
   '(defadvice find-function-search-for-symbol
@@ -878,7 +887,8 @@ BODY-AFTER-EXIT is added to the end of the wrapper."
          (hint (intern (format "%S/hint" name)))
          (body-foreign-keys (hydra--body-foreign-keys body))
          (body-timeout (plist-get body :timeout))
-         (body-idle (plist-get body :idle))
+         (idle (or (and (eq (cadr head) 'body) (plist-get body :idle))
+                   (plist-get (nthcdr 3 head) :idle)))
          (curr-body-fn-sym (intern (format "%S/body" name)))
          (body-on-exit-t
           `((hydra-keyboard-quit)
@@ -901,8 +911,8 @@ BODY-AFTER-EXIT is added to the end of the wrapper."
                      ,(hydra--call-interactively cmd (cadr head))
                    ((quit error)
                     (message (error-message-string err)))))
-             ,(if (and body-idle (eq (cadr head) 'body))
-                  `(hydra-idle-message ,body-idle ,hint ',name)
+             ,(if idle
+                  `(hydra-idle-message ,idle ,hint ',name)
                 `(hydra-show-hint ,hint ',name))
              (hydra-set-transient-map
               ,keymap
